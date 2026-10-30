@@ -5,11 +5,16 @@ PYTHON = python3
 
 all: predict
 
-predict:
-	$(PYTHON) predict.py
-
 train:
-	$(PYTHON) train.py
+	@$(PYTHON) train.py $(FILE)
+
+predict:
+	@$(PYTHON) predict.py
+
+%:
+	@echo "Error: Unknown target '$@'."
+	@echo "Usage: make train FILE=<filename.csv>"
+	@exit 1
 
 bonus:
 	$(PYTHON) visualize.py

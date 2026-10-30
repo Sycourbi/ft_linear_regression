@@ -98,19 +98,19 @@ def estimate_price(mileage, theta0, theta1):
     return price
 
 def main():
-    # Load trained parameters (default to 0 before training)
+    # Recupere les donnee theta (0.0 avant training)
     theta0, theta1 = load_theta()
 
-    # Get mileage from the user
+    # Demande le kilometrage au user
     mileage = get_mileage()
     # Arrête le programme si l'utilisateur a annulé la saisie
     if mileage is None:
         return
 
-    # Estimate the car price
+    # Estime le prix de la voiture
     price = estimate_price(mileage, theta0, theta1)
 
-    # Display the prediction
+    # Affiche la prediction
     print(f"Estimated price: {price:.2f} €")
 
 
