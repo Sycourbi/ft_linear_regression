@@ -245,11 +245,8 @@ ft_linear_regression/
 ├── train.py
 ├── predict.py
 ├── visualize.py
-├── assets/
-│   └── regression_graph.png
-├── theta.json       # Genere apres l'entrainement
-├── .venv/           # Genere par make
-└── __pycache__/     # Cache Python eventuel
+├── regression_graph.png
+└── theta.json       # Genere apres l'entrainement
 ```
 
 | Fichier | Fonction |
@@ -260,16 +257,7 @@ ft_linear_regression/
 | `Makefile` | Installation et commandes de lancement |
 | `requirements.txt` | Dépendance Matplotlib |
 | `data.csv` | Jeu de données d'exemple |
-| `assets/regression_graph.png` | Illustration du résultat pour le README |
-
-Pour éviter de versionner les fichiers générés automatiquement, un `.gitignore` peut contenir :
-
-```gitignore
-.venv/
-__pycache__/
-*.pyc
-theta.json
-```
+| `regression_graph.png` | Illustration du résultat pour le README |
 
 ## Correspondance avec le sujet de 42
 
