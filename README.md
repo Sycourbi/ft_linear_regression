@@ -1,156 +1,182 @@
 # ft_linear_regression
 
-**An introduction to machine learning — École 42**
+**Une introduction au machine learning — École 42**
 
-A simple linear regression model built from scratch in Python. It learns the relationship between a car's mileage and its price using **gradient descent**, saves the trained parameters, and estimates the price of a car from its mileage.
+Ce projet consiste à développer **une régression linéaire simple en Python**, sans utiliser de bibliothèque qui effectue l'apprentissage à notre place. L'objectif est de prédire le prix d'une voiture à partir de son kilométrage, en entraînant le modèle grâce à **la descente de gradient**.
 
-The project also includes data visualization, a regression line, a mean-price reference, prediction-error indicators, and an **R² score**.
+Le projet comprend les deux programmes obligatoires (`train.py` et `predict.py`) et les **trois bonus** : visualisation des données, affichage de la droite de régression et mesure de la qualité du modèle avec le coefficient **R²**.
 
-## Preview
+## Aperçu du résultat
 
-![Linear regression: real prices, fitted line, mean price and prediction errors](assets/regression_graph.png)
+![Graphique de régression linéaire : prix réels, droite de régression, prix moyen et erreurs](regression_graph.png)
 
-*The blue points are the actual prices, the red line is the fitted model, the green dashed line is the average price, and the gray dotted segments show prediction errors (residuals).*
+**Lecture du graphique :**
 
-## Features
+- **Points bleus** : prix réels des voitures du fichier CSV.
+- **Droite rouge** : prix estimés par la régression linéaire.
+- **Ligne verte en pointillés** : prix moyen des voitures.
+- **Segments gris en pointillés** : erreurs de prédiction, aussi appelées *résidus*. Plus un segment est long, plus la prédiction s'éloigne du prix réel.
 
-- **Train:** read a CSV file, validate its values, normalize mileage, and train a linear model using manually implemented gradient descent.
-- **Predict:** ask the user for a mileage and estimate a car's price using the saved coefficients.
-- **Visualize:** plot the dataset and the fitted regression line on the same graph.
-- **Analyze:** display the average price, individual residuals, and the coefficient of determination (**R²**).
-- **Handle errors:** check input values, CSV structure, and saved model parameters.
+## Fonctionnalités
 
-The regression and gradient descent are implemented **without machine-learning libraries**. Matplotlib is used only for visualization.
+- **Entraîner** un modèle à partir d'un fichier CSV contenant les colonnes `km` et `price`.
+- **Normaliser** les kilométrages pour faciliter la convergence de la descente de gradient.
+- **Calculer manuellement** les coefficients `theta0` et `theta1`, sans `numpy.polyfit` ni bibliothèque de machine learning.
+- **Sauvegarder** les coefficients dans `theta.json`.
+- **Prédire** le prix d'une voiture à partir du kilométrage saisi.
+- **Afficher** le nuage de points, la droite de régression, le prix moyen et les résidus.
+- **Évaluer** l'ajustement du modèle avec le coefficient de détermination R².
+- **Vérifier** les arguments, les données CSV et le contenu du fichier de coefficients.
 
-## Requirements
+## Prérequis
 
 - Python 3
 - `make`
-- [`uv`](https://docs.astral.sh/uv/) (installed automatically by the Makefile if missing; this requires `curl` and an internet connection)
-- Matplotlib (installed through `requirements.txt`)
+- Une connexion Internet pour l'installation initiale
+- `curl` si `uv` n'est pas encore installé
+
+Le Makefile installe **`uv`** si nécessaire, crée un environnement virtuel `.venv` et installe **Matplotlib** depuis `requirements.txt`. Matplotlib sert uniquement à produire les graphiques.
 
 ## Installation
 
-Clone the repository and run:
+À la racine du projet :
 
 ```bash
 make
 ```
 
-This creates a local `.venv` environment and installs the required Python dependencies using `uv`. You can also run `make install` explicitly.
+Cette commande prépare l'environnement Python et installe les dépendances. Il est également possible d'exécuter directement :
 
-## Usage
+```bash
+make install
+```
 
-### 1. Train the model
+## Utilisation
+
+### 1. Entraîner le modèle
 
 ```bash
 make train data.csv
 ```
 
-The program reads the dataset, runs gradient descent, and saves the resulting `theta0` and `theta1` in **`theta.json`**.
+Le programme lit les données, normalise les kilométrages, exécute la descente de gradient, puis sauvegarde les coefficients dans `theta.json`.
 
-Expected output:
+Sortie attendue :
 
 ```text
 Training completed successfully.
 Model trained and saved to theta.json.
 ```
 
-### 2. Predict a car's price
+### 2. Prédire le prix d'une voiture
 
 ```bash
 make predict
 ```
 
-Enter the mileage when prompted:
+Exemple avec 100 000 km :
 
 ```text
 Enter car mileage: 100000
 Estimated price: 6354.70 €
 ```
 
-If the model has not yet been trained, both coefficients default to zero, as required by the subject. The prediction program also clamps negative estimated prices to zero.
+Avant le premier entraînement, `theta0` et `theta1` valent tous deux `0`, conformément au sujet. Le programme de prédiction ramène également à zéro tout prix estimé négatif.
 
-### 3. Display the bonuses
+### 3. Afficher les bonus
 
-After training, run:
+Après l'entraînement :
 
 ```bash
 make bonus data.csv
 ```
 
-Expected output with the provided dataset:
+Avec le fichier fourni :
 
 ```text
 Model R2 score: 0.7330
 ```
 
-A Matplotlib window opens with the original data, fitted regression line, average-price line, and residuals. The bonus command requires an existing `theta.json`.
+Une fenêtre Matplotlib affiche le graphique présenté plus haut. Cette commande nécessite que `theta.json` existe déjà.
 
-## Makefile commands
+## Commandes du Makefile
 
-| Command | Description |
+| Commande | Rôle |
 | --- | --- |
-| `make` | Set up the project and install dependencies |
-| `make install` | Create `.venv` and install requirements with `uv` |
-| `make train data.csv` | Train the model on a CSV dataset |
-| `make predict` | Predict a price from a mileage entered by the user |
-| `make bonus data.csv` | Show the graph and print the R² score |
-| `make clean` | Remove the saved model (`theta.json`) |
-| `make fclean` | Remove the saved model and `.venv` |
-| `make re` | Clean and reinstall the project |
+| `make` | Prépare le projet et installe les dépendances |
+| `make install` | Crée `.venv` et installe les dépendances avec `uv` |
+| `make train data.csv` | Entraîne le modèle avec le CSV indiqué |
+| `make predict` | Demande un kilométrage et affiche le prix estimé |
+| `make bonus data.csv` | Affiche le graphique et calcule le R² |
+| `make clean` | Supprime `theta.json` |
+| `make fclean` | Supprime `theta.json` et `.venv` dans le Makefile fourni |
+| `make re` | Nettoie puis réinstalle le projet |
 
-## How it works
+> **Remarque :** si tu appliques aussi la modification proposée pour supprimer `__pycache__` dans `fclean`, cette commande supprimera également le cache Python.
 
-### 1. Linear regression
+## Fonctionnement de l'algorithme
 
-The model predicts a price using a single feature, the car's mileage:
+### 1. La régression linéaire
 
-\[
-\widehat{price} = \theta_0 + \theta_1 \times mileage
-\]
-
-- **θ₀** is the intercept: the predicted price at zero mileage.
-- **θ₁** is the slope: how much the estimated price changes for each additional kilometer.
-
-### 2. Data normalization
-
-Before training, mileage is standardized to make gradient descent more stable:
+Le prix est estimé à partir d'une seule variable : le kilométrage.
 
 \[
-x_{normalized} = \frac{x - \mu}{\sigma}
+\widehat{prix} = \theta_0 + \theta_1 \times kilometrage
 \]
 
-Here, **μ** is the mean mileage and **σ** is its standard deviation. After training, the parameters are converted back to work with actual kilometers. This normalization does not require NumPy or scikit-learn.
+- **θ₀** : ordonnée à l'origine, c'est-à-dire le prix estimé pour 0 km.
+- **θ₁** : pente de la droite, c'est-à-dire la variation du prix estimé pour un kilomètre supplémentaire.
 
-### 3. Gradient descent
+Avec le jeu de données fourni, **θ₁ est négatif** : le prix estimé diminue lorsque le kilométrage augmente.
 
-The model starts with `theta0 = 0` and `theta1 = 0` and repeatedly adjusts them to reduce the difference between predicted and actual prices.
+### 2. La normalisation
 
-For each training iteration:
+Les kilométrages étant beaucoup plus élevés que les prix, le programme les normalise avant l'entraînement :
 
 \[
-\theta_0 \leftarrow \theta_0 - \alpha\frac{1}{m}\sum_{i=1}^{m}(\widehat{y_i}-y_i)
+x_{normalise} = \frac{x - \mu}{\sigma}
+\]
+
+- **μ** : moyenne des kilométrages.
+- **σ** : écart-type des kilométrages.
+
+Cette transformation facilite la descente de gradient. Après l'entraînement, les coefficients sont **dénormalisés** afin de pouvoir prédire directement à partir des kilomètres réels.
+
+### 3. La descente de gradient
+
+Les coefficients sont initialisés à zéro, puis corrigés progressivement afin de réduire les erreurs entre les prix réels et les prix estimés.
+
+Pour chaque itération :
+
+\[
+\theta_0 \leftarrow \theta_0 - \alpha \frac{1}{m}\sum_{i=1}^{m}(\widehat{y_i}-y_i)
 \]
 
 \[
-\theta_1 \leftarrow \theta_1 - \alpha\frac{1}{m}\sum_{i=1}^{m}(\widehat{y_i}-y_i)x_i
+\theta_1 \leftarrow \theta_1 - \alpha \frac{1}{m}\sum_{i=1}^{m}(\widehat{y_i}-y_i)x_i
 \]
 
-In these formulas, **m** is the number of cars, **α** is the learning rate, and **xᵢ** is the **normalized mileage during training**. Both coefficients are updated simultaneously using the same iteration's gradients.
+Où :
 
-Current training settings:
+- **α** est le taux d'apprentissage (*learning rate*).
+- **m** est le nombre de voitures.
+- **xᵢ** est le kilométrage **normalisé** pendant l'entraînement.
+- **yᵢ** est le prix réel et **ŷᵢ** le prix estimé.
 
-| Parameter | Value |
+Les deux coefficients sont **mis à jour simultanément**, à partir des gradients calculés avec leurs anciennes valeurs.
+
+| Paramètre | Valeur utilisée |
 | --- | ---: |
-| Learning rate | `0.01` |
-| Iterations | `10000` |
-| Training feature | Mileage (`km`) |
-| Target | Price (`price`) |
+| Taux d'apprentissage | `0.01` |
+| Nombre d'itérations | `10000` |
+| Variable explicative | Kilométrage (`km`) |
+| Valeur à prédire | Prix (`price`) |
 
-### 4. Saved model
+### 4. Sauvegarde des coefficients
 
-After training, the coefficients are stored in `theta.json` and reused by `predict.py` and `visualize.py`. For the supplied dataset, they are approximately:
+Après l'entraînement, les coefficients sont enregistrés dans `theta.json` puis réutilisés par `predict.py` et `visualize.py`.
+
+Exemple obtenu avec `data.csv` :
 
 ```json
 {
@@ -159,36 +185,31 @@ After training, the coefficients are stored in `theta.json` and reused by `predi
 }
 ```
 
-These values depend on the dataset used for training.
+Ces coefficients changent si l'on entraîne le modèle avec un autre jeu de données.
 
-## Model evaluation: R²
+## Évaluation du modèle : le coefficient R²
 
-The coefficient of determination compares the model's squared prediction errors with the squared deviations from the mean price:
+Le coefficient de détermination **R²** compare les erreurs du modèle à celles d'une prédiction qui utiliserait systématiquement le prix moyen :
 
 \[
-R^2 = 1 - \frac{\sum_i(y_i-\widehat{y_i})^2}{\sum_i(y_i-\bar{y})^2}
+R^2 = 1 - \frac{\sum_i(y_i-\widehat{y_i})^2}{\sum_i(y_i-\overline{y})^2}
 \]
 
-On the supplied **24-car dataset**:
+Avec le fichier `data.csv` fourni :
 
-| Metric | Result |
+| Indicateur | Résultat |
 | --- | ---: |
-| Number of cars | `24` |
-| Average car price | `6331.83 €` |
-| R² score | **`0.7330`** |
+| Nombre de voitures | **24** |
+| Prix moyen | **6 331,83 €** |
+| Coefficient R² | **0.7330** |
 
-An R² of approximately **0.7330** means that the fitted line explains about **73.3% of the variation in the prices in this dataset**. It does **not** mean that 73.3% of individual predictions are correct, and it is **not** a measure of performance on unseen data.
+Un **R² de 0.7330** signifie que le modèle explique environ **73,3 % de la variabilité des prix de ce jeu de données**. Cela **ne signifie pas** que 73,3 % des prédictions sont exactes. Le score est ici calculé sur les données utilisées pour l'entraînement, et non sur un jeu de test indépendant.
 
-### Reading the graph
+La ligne verte du graphique matérialise le prix moyen. Les segments gris montrent les écarts entre les observations et la droite rouge : ce sont ces erreurs qui interviennent dans le calcul du R².
 
-- **Blue dots — Real prices:** observations from `data.csv`.
-- **Red line — Regression line:** predictions computed from the trained coefficients.
-- **Green dashed line — Mean price:** the average observed price, used as a baseline for understanding R².
-- **Gray dotted segments — Residuals:** vertical differences between observed and predicted prices; longer segments indicate larger errors.
+## Format du fichier CSV
 
-## Dataset format
-
-The program expects a CSV file with exactly these column names, in this order:
+Le programme attend un fichier `.csv` dont les colonnes sont exactement `km` et `price`, dans cet ordre :
 
 ```csv
 km,price
@@ -197,18 +218,23 @@ km,price
 150500,4400
 ```
 
-The loader checks that the file has a `.csv` extension, contains at least two observations, has nonnegative finite numeric values, and includes different mileage values.
+Le programme vérifie notamment :
 
-You can train on another dataset with the same structure:
+- la présence des deux colonnes et de valeurs numériques finies ;
+- l'absence de kilométrages ou de prix négatifs ;
+- la présence d'au moins deux lignes de données ;
+- l'existence de kilométrages différents, indispensable à la normalisation.
+
+Il est possible d'utiliser un autre jeu de données de même structure :
 
 ```bash
-make train other_data.csv
-make bonus other_data.csv
+make train autre_fichier.csv
+make bonus autre_fichier.csv
 ```
 
-**Note:** `make bonus` evaluates the currently saved model against the CSV you provide. For meaningful results, use the same dataset you used to train it unless you intentionally want to evaluate on another dataset.
+**Attention :** `make bonus` utilise les coefficients du dernier entraînement. Pour analyser ce même entraînement, il faut donc fournir le CSV correspondant.
 
-## Project structure
+## Organisation du projet
 
 ```text
 ft_linear_regression/
@@ -221,44 +247,57 @@ ft_linear_regression/
 ├── visualize.py
 ├── assets/
 │   └── regression_graph.png
-├── theta.json          # Generated after training
-└── .venv/              # Generated by make
+├── theta.json       # Genere apres l'entrainement
+├── .venv/           # Genere par make
+└── __pycache__/     # Cache Python eventuel
 ```
 
-| File | Role |
+| Fichier | Fonction |
 | --- | --- |
-| `train.py` | CSV validation, normalization, gradient descent, model saving |
-| `predict.py` | Model loading, input validation, price prediction |
-| `visualize.py` | Scatter plot, regression line, mean price, residuals, R² |
-| `Makefile` | Installation and execution shortcuts |
-| `requirements.txt` | Matplotlib dependency |
-| `data.csv` | Example training dataset |
+| `train.py` | Lecture et validation du CSV, normalisation, descente de gradient et sauvegarde |
+| `predict.py` | Chargement des coefficients, saisie du kilométrage et prédiction |
+| `visualize.py` | Graphique, droite de régression, prix moyen, résidus et calcul du R² |
+| `Makefile` | Installation et commandes de lancement |
+| `requirements.txt` | Dépendance Matplotlib |
+| `data.csv` | Jeu de données d'exemple |
+| `assets/regression_graph.png` | Illustration du résultat pour le README |
 
-## Subject requirements
+Pour éviter de versionner les fichiers générés automatiquement, un `.gitignore` peut contenir :
 
-**Mandatory:**
+```gitignore
+.venv/
+__pycache__/
+*.pyc
+theta.json
+```
 
-- [x] Predict the price of a car from its mileage.
-- [x] Train a linear regression model using gradient descent.
-- [x] Initialize the parameters at zero before training.
-- [x] Update both parameters simultaneously.
-- [x] Save and reuse the trained coefficients.
+## Correspondance avec le sujet de 42
 
-**Bonuses:**
+### Partie obligatoire
 
-- [x] Plot the dataset distribution.
-- [x] Draw the regression line on the same graph.
-- [x] Calculate a model-precision metric (R²).
+- [x] Prédire le prix d'une voiture à partir de son kilométrage.
+- [x] Implémenter la régression linéaire et la descente de gradient.
+- [x] Initialiser `theta0` et `theta1` à zéro avant l'entraînement.
+- [x] Mettre à jour les deux coefficients simultanément.
+- [x] Sauvegarder puis réutiliser les coefficients calculés.
 
-Additional visualization: mean-price reference line and prediction residuals.
+### Bonus
 
-## Limitations
+- [x] Représenter la distribution des données sur un graphique.
+- [x] Ajouter la droite de régression sur le même graphique.
+- [x] Calculer une mesure de précision du modèle : **R²**.
 
-- The model uses **mileage only**; car prices also depend on age, condition, brand, and other factors.
-- R² is computed on the supplied dataset, not on a separate test set.
-- The prediction CLI clips negative estimated prices to zero, while the graph and R² use the raw linear formula.
-- Extrapolating far beyond the mileage range in the dataset may produce unreliable estimates.
+**Améliorations visuelles supplémentaires :** affichage du prix moyen et des résidus.
 
-## Acknowledgments
+## Limites du modèle
 
-Created as part of the **École 42 `ft_linear_regression`** project (subject version 4.1). AI assistance was used to review code, discuss tests, and help prepare documentation; implementation decisions and understanding remain the student's responsibility.
+- Le modèle ne prend en compte que le **kilométrage** : l'âge, la marque et l'état du véhicule influencent aussi son prix.
+- Le R² affiché mesure l'ajustement sur les données fournies, pas la précision sur de nouvelles voitures.
+- `predict.py` empêche les prix négatifs, tandis que le graphique et le R² utilisent la formule linéaire sans cette limitation.
+- Les prédictions très éloignées des kilométrages du jeu de données peuvent être peu fiables.
+
+## À propos
+
+Projet réalisé dans le cadre de **ft_linear_regression — École 42**, sujet version 4.1.
+
+Une assistance par IA a été utilisée pour discuter de l'implémentation, vérifier les tests et préparer la documentation. La compréhension du fonctionnement et les choix techniques restent sous la responsabilité de l'étudiante.
