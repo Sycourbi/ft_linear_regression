@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 
-# Permet de lire les paramètres theta0 et theta1 enregistrés au format JSON
+# Permet de construire le chemin du fichier theta
+from pathlib import Path
+# Permet de lire les parametres theta0 et theta1 enregistres au format JSON
 import json
-# Permet de vérifier que le kilométrage est un nombre fini
+# Permet de verifier que le kilometrage est un nombre fini
 import math
+# Permet de recuperer le nom du fichier CSV passe en argument
+import sys  
 
-THETA_FILE = "theta.json"
+# Chemin du fichier theta dans le dossier du projet
+THETA_FILE = Path(__file__).resolve().parent / "theta.json"
 
 
 
@@ -16,74 +21,82 @@ def load_theta():
     """
 
     try:
-        # Ouvre le fichier et récupère son contenu
+        # Ouvre le fichier et recupere son contenu
         with open(THETA_FILE, "r") as file:
             data = json.load(file)
 
-        # Vérifie que les données sont stockées dans un dictionnaire
+        # Verifie que les donnees sont stockees dans un dictionnaire
         if not isinstance(data, dict):
             raise ValueError("Theta file must contain a dictionary.")
 
-        # Vérifie que les deux paramètres sont présents
+        # Verifie que les deux parametres sont presents
         if "theta0" not in data:
             raise ValueError("Missing theta0 parameter.")
         if "theta1" not in data:
             raise ValueError("Missing theta1 parameter.")
 
-        # Récupère les valeurs des paramètres
+        # Recupere les valeurs des parametres
         theta0 = data["theta0"]
         theta1 = data["theta1"]
 
-        # Vérifie que les paramètres sont des nombres
-        if not isinstance(theta0, (int, float)):
+        # Verifie que les parametres sont des nombres et non des booleens
+        if type(theta0) not in (int, float):
             raise ValueError("Theta0 must be a number.")
-        if not isinstance(theta1, (int, float)):
+        if type(theta1) not in (int, float):
             raise ValueError("Theta1 must be a number.")
 
-        # Convertit les paramètres en nombres décimaux
+        # Convertit les parametres en nombres decimaux
         theta0 = float(theta0)
         theta1 = float(theta1)
 
-        # Vérifie que les paramètres sont des nombres finis
+        # Verifie que les parametres sont des nombres finis
         if not math.isfinite(theta0):
             raise ValueError("Theta0 must be finite.")
         if not math.isfinite(theta1):
             raise ValueError("Theta1 must be finite.")
 
-        # Retourne les paramètres au main
+        # Retourne les parametres au main
         return theta0, theta1
 
     except FileNotFoundError:
-        # Initialise les paramètres à zéro avant l'entraînement
+        # Si theta.json n'existe pas, initialise les coefficients a zero
         return 0.0, 0.0
 
     except (json.JSONDecodeError, ValueError) as error:
         # Signale un fichier JSON invalide
         raise ValueError(f"Invalid theta file: {error}") from error
 
+    except OSError as error:
+        # Signale un probleme d'acces au fichier
+        raise OSError(f"Cannot read theta file: {error}") from error
 
 def get_mileage():
     """
-    Demande le kilométrage d'une voiture à l'utilisateur.
-    Vérifie que la valeur est un nombre positif ou nul.
-    Retourne le kilométrage sous forme de float.
+    Demande le kilometrage d'une voiture a l'utilisateur.
+    Verifie que la valeur est un nombre positif ou nul.
+    Retourne le kilometrage sous forme de float.
     """
 
     while True:
         try:
-            # Demande le kilométrage à l'utilisateur
+            # Demande le kilometrage a l'utilisateur
             mileage = float(input("Enter car mileage: "))
 
-            # Vérifie que le kilométrage est un nombre fini et positif ou nul
-            if not math.isfinite(mileage) or mileage < 0:
+            # Verifie que le kilometrage est un nombre fini
+            if not math.isfinite(mileage):
+                print("Error: mileage must be a finite number.")
+                continue
+
+            # Verifie que le kilometrage est positif ou nul
+            if mileage < 0:
                 print("Error: mileage cannot be negative.")
                 continue
 
-            # Retourne le kilométrage valide au main
+            # Retourne le kilometrage valide au main
             return mileage
 
         except ValueError:
-            # Gère les saisies qui ne peuvent pas être converties en nombre
+            # Gere les saisies qui ne peuvent pas etre converties en nombre
             print("Error: please enter a valid number.")
         except (KeyboardInterrupt, EOFError):
             # Interrompt proprement le programme avec Ctrl+C ou Ctrl+D
@@ -91,19 +104,24 @@ def get_mileage():
             return None
 
 def estimate_price(mileage, theta0, theta1):
-    # Calcule le prix estimé à partir du kilométrage et des coefficients
+    # Calcule le prix estime a partir du kilometrage et des coefficients
     price = theta0 + theta1 * mileage
-
-    # Retourne le prix estimé
+    # Empeche le prix de descendre sous zero
+    price = max(0.0, price)
+    # Retourne le prix estime
     return price
 
 def main():
-    # Recupere les donnee theta (0.0 avant training)
-    theta0, theta1 = load_theta()
+    # Recupere les coefficients et gere les erreurs de lecture
+    try:
+        theta0, theta1 = load_theta()
+    except (ValueError, OSError) as error:
+        print(f"Error: {error}")
+        sys.exit(1)
 
     # Demande le kilometrage au user
     mileage = get_mileage()
-    # Arrête le programme si l'utilisateur a annulé la saisie
+    # Arrete le programme si l'utilisateur a annule la saisie
     if mileage is None:
         return
 

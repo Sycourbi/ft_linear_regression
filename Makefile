@@ -1,23 +1,69 @@
 
-PYTHON = python3
+# ft_linear_regression - Gestion de Python avec uv
 
-.PHONY: all predict train bonus clean
+UV := $(shell command -v uv 2>/dev/null || echo $(HOME)/.local/bin/uv)
+VENV := .venv
+PYTHON := $(VENV)/bin/python
 
-all: predict
+# Recupere le fichier passe apres "make train"
+ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
+# Installe le projet et affiche les commandes
+all: install
+	@echo ""
+	@echo "Projet pret !"
+	@echo "  make train data.csv"
+	@echo "  make predict"
+
+# Installe uv et prepare l'environnement si necessaire
+install:
+	@if [ ! -x "$(UV)" ]; then \
+		curl -LsSf https://astral.sh/uv/install.sh | sh || exit 1; \
+	fi
+	@if [ ! -x "$(PYTHON)" ]; then \
+		"$(UV)" venv $(VENV) --python python3; \
+	fi
+	@if [ -f requirements.txt ]; then \
+		"$(UV)" pip install --python $(PYTHON) -r requirements.txt; \
+	fi
+
+# Entraine le modele avec le fichier CSV fourni
 train:
-	@$(PYTHON) train.py $(FILE)
+	@if [ ! -x "$(PYTHON)" ]; then \
+		echo "Error: project not installed. Run 'make install' first."; \
+		exit 1; \
+	elif [ "$(words $(MAKECMDGOALS))" -ne 2 ]; then \
+		echo "Error: please provide a CSV file."; \
+		echo "Usage: make train data.csv"; \
+		exit 1; \
+	else \
+		$(PYTHON) train.py $(ARGS); \
+	fi
 
+# Lance le programme de prediction
 predict:
-	@$(PYTHON) predict.py
+	@if [ ! -x "$(PYTHON)" ]; then \
+		echo "Error: project not installed. Run 'make install' first."; \
+		exit 1; \
+	else \
+		$(PYTHON) predict.py; \
+	fi
 
-%:
-	@echo "Error: Unknown target '$@'."
-	@echo "Usage: make train FILE=<filename.csv>"
-	@exit 1
-
-bonus:
-	$(PYTHON) visualize.py
-
+# Supprime les coefficients du modele
 clean:
-	rm -f theta.json
+	@rm -f theta.json
+
+# Supprime aussi l'environnement virtuel
+fclean: clean
+	@rm -rf $(VENV)
+
+# Reinstalle le projet
+re: fclean all
+
+# Ignore le CSV comme cible Make
+ifneq (,$(filter train,$(firstword $(MAKECMDGOALS))))
+.PHONY: $(ARGS)
+$(ARGS):;@:
+endif
+
+.PHONY: all install train predict clean fclean re
