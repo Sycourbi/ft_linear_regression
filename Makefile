@@ -68,10 +68,9 @@ bonus:
 clean:
 	@rm -f theta.json
 
-# Supprime aussi l'environnement virtuel
+# Supprime l'environnement virtuel et le cache Python
 fclean: clean
-	@rm -rf $(VENV)
-
+	@rm -rf $(VENV) __pycache__
 # Reinstalle le projet
 re: fclean all
 
