@@ -299,5 +299,3 @@ theta.json
 ## À propos
 
 Projet réalisé dans le cadre de **ft_linear_regression — École 42**, sujet version 4.1.
-
-Une assistance par IA a été utilisée pour discuter de l'implémentation, vérifier les tests et préparer la documentation. La compréhension du fonctionnement et les choix techniques restent sous la responsabilité de l'étudiante.
