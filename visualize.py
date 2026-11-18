@@ -41,24 +41,48 @@ def calculate_r2(mileages, prices, theta0, theta1):
     return 1 - errors / total
 
 
+
 def plot_regression(mileages, prices, theta0, theta1):
     """
     Affiche les donnees du fichier CSV dans un graphique.
-    Trace la droite de regression calculee par le modele.
-    Permet de comparer les prix reels aux prix estimes.
+    Trace la droite de regression et la ligne du prix moyen.
+    Affiche les erreurs entre les prix reels et estimes.
     """
-    # Calcule les prix estimes aux bornes du graphique
+    # Recupere les kilometrages minimum et maximum
     x_values = [min(mileages), max(mileages)]
+
     # Calcule les prix avec la formule de regression lineaire
     y_values = [
         theta0 + theta1 * km for km in x_values
     ]
+
+    # Calcule le prix moyen des voitures
+    mean_price = sum(prices) / len(prices)
 
     # Affiche les donnees du fichier CSV
     plt.scatter(mileages, prices, label="Real prices")
 
     # Trace la droite de regression
     plt.plot(x_values, y_values, color="red", label="Regression line")
+
+    # Trace la ligne du prix moyen
+    plt.axhline(
+        mean_price,
+        color="green",
+        linestyle="--",
+        label=f"Prix moyen: {mean_price:.2f}"
+    )
+
+    # Affiche les erreurs entre les prix reels et estimes
+    for km, price in zip(mileages, prices):
+        estimated_price = theta0 + theta1 * km
+        plt.plot(
+            [km, km],
+            [price, estimated_price],
+            color="gray",
+            linestyle=":",
+            alpha=0.5
+        )
 
     # Ajoute les titres et la legende
     plt.xlabel("Mileage (km)")
