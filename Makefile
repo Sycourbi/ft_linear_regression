@@ -14,6 +14,7 @@ all: install
 	@echo "Projet pret !"
 	@echo "  make train data.csv"
 	@echo "  make predict"
+	@echo "  make bonus data.csv"
 
 # Installe uv et prepare l'environnement si necessaire
 install:
@@ -24,8 +25,9 @@ install:
 		"$(UV)" venv $(VENV) --python python3; \
 	fi
 	@if [ -f requirements.txt ]; then \
-		"$(UV)" pip install --python $(PYTHON) -r requirements.txt; \
+		"$(UV)" pip install --python $(PYTHON) -r requirements.txt --link-mode=copy; \
 	fi
+	@echo "Installation completed successfully."
 
 # Entraine le modele avec le fichier CSV fourni
 train:
@@ -49,6 +51,19 @@ predict:
 		$(PYTHON) predict.py; \
 	fi
 
+# Affiche les graphiques et la precision du modele
+bonus:
+	@if [ ! -x "$(PYTHON)" ]; then \
+		echo "Error: project not installed. Run 'make install' first."; \
+		exit 1; \
+	elif [ "$(words $(MAKECMDGOALS))" -ne 2 ]; then \
+		echo "Error: please provide a CSV file."; \
+		echo "Usage: make bonus data.csv"; \
+		exit 1; \
+	else \
+		$(PYTHON) visualize.py $(ARGS); \
+	fi
+
 # Supprime les coefficients du modele
 clean:
 	@rm -f theta.json
@@ -61,9 +76,9 @@ fclean: clean
 re: fclean all
 
 # Ignore le CSV comme cible Make
-ifneq (,$(filter train,$(firstword $(MAKECMDGOALS))))
+ifneq (,$(filter train bonus,$(firstword $(MAKECMDGOALS))))
 .PHONY: $(ARGS)
 $(ARGS):;@:
 endif
 
-.PHONY: all install train predict clean fclean re
+.PHONY: all install train predict bonus clean fclean re

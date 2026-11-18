@@ -98,6 +98,11 @@ def load_data(filename):
 
 
 def normalize_data(mileages):
+    """
+    Normalise les kilometrages pour faciliter l'entrainement.
+    Utilise la moyenne et l'ecart-type des kilometrages.
+    Retourne les valeurs normalisees, la moyenne et l'ecart-type.
+    """
     # Calcule le nombre total de kilometrages
     count = len(mileages)
     # Calcule la moyenne des kilometrages
@@ -132,6 +137,11 @@ def normalize_data(mileages):
 
 
 def train_model(normalized_mileages, prices):
+    """
+    Entraine le modele avec la descente de gradient.
+    Ajuste theta0 et theta1 pour reduire les erreurs de prediction.
+    Retourne les coefficients calcules sur les donnees normalisees.
+    """
     # Initialise les deux coefficients du modele a zero
     theta0 = 0.0
     theta1 = 0.0
@@ -139,7 +149,7 @@ def train_model(normalized_mileages, prices):
     # Recupere le nombre total de voitures dans le fichier CSV
     count = len(normalized_mileages)
 
-    # Repete l'entraînement pour ameliorer progressivement les coefficients
+    # Repete l'entrainement pour ameliorer progressivement les coefficients
     for iteration in range(ITERATIONS):
 
         # Initialise les sommes des erreurs necessaires aux deux coefficients
@@ -173,11 +183,16 @@ def train_model(normalized_mileages, prices):
         theta0 = theta0 - correction_theta0
         theta1 = theta1 - correction_theta1
 
-    # Retourne les coefficients obtenus apres l'entraînement
+    # Retourne les coefficients obtenus apres l'entrainement
     return theta0, theta1
 
 
 def denormalize_theta(theta0, theta1, moyenne, ecart_type):
+    """
+    Convertit les coefficients du modele en valeurs reelles.
+    Annule l'effet de la normalisation des kilometrages.
+    Retourne theta0 et theta1 utilisables avec les kilometres reels.
+    """
     # Adapte theta1 pour utiliser les kilometres reels
     theta1 = theta1 / ecart_type
 
@@ -224,7 +239,7 @@ def main():
         print(f"Error: {error}")
         sys.exit(1)
 
-    # Affiche un message confirmant la fin de l'entraînement
+    # Affiche un message confirmant la fin de l'entrainement
     print("Training completed successfully.")
     print("Model trained and saved to theta.json.")
 

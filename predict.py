@@ -19,7 +19,6 @@ def load_theta():
     Charge theta0 et theta1 depuis un fichier JSON.
     Retourne (0.0, 0.0) si le fichier n'existe pas.
     """
-
     try:
         # Ouvre le fichier et recupere son contenu
         with open(THETA_FILE, "r") as file:
@@ -72,11 +71,10 @@ def load_theta():
 
 def get_mileage():
     """
-    Demande le kilometrage d'une voiture a l'utilisateur.
-    Verifie que la valeur est un nombre positif ou nul.
-    Retourne le kilometrage sous forme de float.
+    Demande un kilometrage a l'utilisateur.
+    Verifie que la valeur saisie est valide et positive ou nulle.
+    Retourne le kilometrage ou None si la saisie est annulee.
     """
-
     while True:
         try:
             # Demande le kilometrage a l'utilisateur
@@ -104,6 +102,11 @@ def get_mileage():
             return None
 
 def estimate_price(mileage, theta0, theta1):
+    """
+    Calcule le prix estime d'une voiture selon son kilometrage.
+    Utilise les coefficients theta0 et theta1 du modele.
+    Retourne un prix positif ou nul.
+    """
     # Calcule le prix estime a partir du kilometrage et des coefficients
     price = theta0 + theta1 * mileage
     # Empeche le prix de descendre sous zero
